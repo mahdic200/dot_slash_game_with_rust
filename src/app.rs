@@ -130,10 +130,11 @@ impl App {
                 let point = &points[index];
                 point.get_symbol();
                 if point.is_valid_line() {
+                    use colored::Colorize;
                     if point.owner_name() == self.player_1.name() {
-                        print!("\u{1b}[31m{}\u{1b}[39m", point.get_symbol());
+                        print!("{}", point.get_symbol().cyan());
                     } else if point.owner_name() == self.player_2.name() {
-                        print!("\u{1b}[34m{}\u{1b}[39m", point.get_symbol());
+                        print!("{}", point.get_symbol().red());
                     } else {
                         point.draw();
                     }
