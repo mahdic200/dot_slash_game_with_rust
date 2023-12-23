@@ -2,17 +2,11 @@ use crate::app::App;
 use super::app::player::Player;
 use crate::app::enums::{GameType, PlayerType};
 
-pub struct Boot {
-
-}
+pub struct Boot {}
 
 impl Boot {
     pub fn new() -> Boot {
         Boot {}
-    }
-
-    fn clear_screen(&self) {
-        print!("\x1B[2J\x1B[1;1H");
     }
 
     fn config_difficulty(&self) -> GameType {
@@ -73,11 +67,8 @@ impl Boot {
     }
 
     fn initializer(&self) -> App {
-        self.clear_screen();
         let difficulty: GameType = self.config_difficulty();
-        self.clear_screen();
         let game_mode: usize = self.config_game_mode();
-        self.clear_screen();
         let (player_1, player_2) = self.set_players(game_mode);
 
         let app = App::new((player_1, player_2), difficulty);

@@ -166,7 +166,6 @@ impl App {
         let mut turn = 0;
         let (mut sc1, mut sc2): (usize, usize) = (0, 0);
         loop {
-            print!("\x1B[2J\x1B[1;1H");
             if self.is_done(points) {break;};
             (sc1, sc2) = self.sq_check(points);
             self.draw(points);
@@ -181,7 +180,6 @@ impl App {
             }
             turn = if turn == 1 {0} else {1};
         }
-        print!("\x1B[2J\x1B[1;1H");
         self.draw(points);
         println!("\n");
         println!("{}'s scores : {}", self.player_1.name(), sc1);
