@@ -1,5 +1,5 @@
 use super::{enums::PlayerType, point::Point};
-use crate::App;
+use crate::app::App;
 
 
 #[derive(Debug)]
@@ -21,62 +21,61 @@ impl Player {
         String::from(&self.name)
     }
 
-    fn get_user_input(&self, stars: usize, points: &mut Vec<Point>) -> (usize, usize) {
+    fn get_user_input(&self, edge_size: usize, points: &mut Vec<Point>) {
         let mut row: usize;
         let mut col: usize;
         loop {
             row = App::get_user_input("Enter row number :", "invalid row !");
             println!("selected row : {}", row);
+            row -= 1;
             match row {
-                row if (row < 2 * stars - 1) => {},
+                row if (row < edge_size) => {},
                 _ => {println!("\ninvalid input !\n");continue;},
             }
             col = App::get_user_input("Enter col number :", "invalid col !");
-            println!("selected row : {}", col);
+            col = match col {
+                col if row % 2 == 0 => 2 * col - 1,
+                col if row % 2 == 1 => 2 * (col - 1),
+                _ => col,
+            };
             match col {
-                x if x < 2 * stars => {
-                    match &mut points[row * (2 * stars - 1) + col] {
-                        point if !point.is_valid_line() => {println!("\ninvalid line !\n");continue;},
-                        point if point.has_owner() => {println!("\nline is taken !\n");continue;},
-                        point => {
+                x if x < edge_size => {
+                    match &mut points[row * (edge_size) + col] {
+                        point if point.is_valid_line() && !point.has_owner() => {
                             point.set_owner(String::from(&self.name));
                             break;
+                        },
+                        point => {
+                            println!("\n\n******\ninvalid choice !\n******");
+                            if point.has_owner() {println!("\ncell is taken !\n")};
+                            continue;
                         },
                     }
                 },
                 _ => {println!("\ninvalid input !\n");continue;},
             }
         }
-        (row, col)
     }
     
-    fn get_computer_input(&self, stars: usize, points: &mut Vec<Point>) -> (usize, usize) {
+    fn get_computer_input(&self, _: usize, points: &mut Vec<Point>) {
         use rand::Rng;
-        let row : usize;
-        let col : usize;
         loop {
             let mut index = rand::thread_rng().gen_range(0..=500);
             index = index % points.len();
             match &mut points[index] {
-                point if !point.is_valid_line() => continue,
-                point if point.has_owner() => continue,
-                point => {
+                point if point.is_valid_line() && !point.has_owner() => {
                     point.set_owner(String::from(&self.name));
-                    row = (index % (2 * stars)) - 1;
-                    col = index % (2 * stars - 1);
-                    break;
+                    break
                 },
+                _ => continue,
             }
-
         }
-        println!("computer selected row : {} and col : {}", row, col);
-        (row, col)
     }
 
-    pub fn get_player_input(&self, stars: usize, points: &mut Vec<Point>) -> (usize, usize) {
+    pub fn get_player_input(&self, edge_size: usize, points: &mut Vec<Point>) {
         match &self.player_type {
-            PlayerType::User => self.get_user_input(stars, points),
-            PlayerType::Computer => self.get_computer_input(stars, points),
+            PlayerType::User => self.get_user_input(edge_size, points),
+            PlayerType::Computer => self.get_computer_input(edge_size, points),
         }
     }
 }
